@@ -17,8 +17,6 @@ class Wire
   end
 
   def process(directions)
-#    puts "DIR #{directions.inspect}"
-    
     for i in 0 ... directions.size
       cmd = directions[i]
       direction = cmd[0]
@@ -26,10 +24,7 @@ class Wire
 
       method(direction).call(steps)
     end
-
-#    puts "PATH => #{path.inspect}"
   end
-    
 
   def U(steps)
     pos2 = @pos[Y]+steps
@@ -82,15 +77,12 @@ class Wire
 
   def intersect_closest_to_origin(wire2)
     closest = -1
-
-#    puts "#{@path.length}, #{wire2.path.length}"
     
     for sloc in @path
       loc = sloc.split(",")
       if (wire2.path.include? sloc) && (sloc != "0,0")
         distance = loc[X].to_i.abs + loc[Y].to_i.abs
         closest = distance if (closest < 0) || (distance < closest)
-#        puts "#{loc.inspect}  dist = #{distance}"
       end
     end
 
@@ -101,15 +93,11 @@ class Wire
   def intresect_least_steps(wire2)
     least_steps = -1
     
-#    puts "STEPS: #{@pos_steps.inspect}"
-#    puts "PATH: #{@path.inspect}"    
-
     for sloc in @path
       loc = sloc.split(",")
       if (wire2.path.include? sloc) && (sloc != "0,0")
         steps = @pos_steps[sloc] + wire2.pos_steps[sloc]
         least_steps = steps if (least_steps < 0) || (steps < least_steps)
-#        puts "LEAST #{loc.inspect}  dist = #{steps}"
       end
     end
     return least_steps
