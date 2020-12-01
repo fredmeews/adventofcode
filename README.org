@@ -12,7 +12,7 @@
 ***** The three integers immediately after the opcode tell you these three positions
 ****** First two - indicate positions from which you should read the input values
 ****** Third - indicates the position at which the output should be stored
-**** 2- Same as "1" except it MULTIPLIES 
+**** 2- MULTIPLY together numbers read from two positions and stores the result in a third position
 **** 99 - program terminating
 
 *** Once you're done processing an opcode, move to the next one by stepping forward 4 positions.
@@ -39,6 +39,61 @@
 ***** Within the range given in your puzzle input
 **** Two adjacent digits are the same (like 22 in 122345)
 **** From left to right digits only ever increase or stay the same (like 111123 or 135679)
+** Puzzle 5 - opcode v2
+*** CODE MEANINGS
+**** 3 - STORE takes a single integer as input and saves it to the position given by its only parameter
+***** For example, the instruction 3,50 would take an input value and store it at address 50.
+**** 4 - OUTPUT the value of its only parameter
+***** For example, the instruction 4,50 would output the value at address 50
 
-   
+**** Programs that use these instructions will come with documentation that explains what should be connected to the input and output.
+***** [3,0,4,0,99] outputs whatever it gets as input, then halts
 
+
+*** PARAMETER MODES
+**** POSITION MODE (0) - default, param interpreted as position
+***** if the parameter is 50, its value is the value stored at address 50 in memor
+**** IMMEDIATE MODE (1) - param  is interpreted as a value 
+***** if the parameter is 50, its value is simply 50
+
+
+*** EXAMPLE INSTRUCTION - 1002
+#+BEGIN_SRC dot
+ABCDE
+ 1002
+
+DE - two-digit opcode,      02 == opcode 2
+ C - mode of 1st parameter,  0 == position mode
+ B - mode of 2nd parameter,  1 == immediate mode
+ A - mode of 3rd parameter,  0 == position mode,
+                                  omitted due to being a leading zero
+#+END_SRC
+
+
+*** EXAMPLE WITH PARMETERS - 1002,4,3,4
+**** Multiplies its first two parameters
+**** Param1 = 4, position mode its value is the value stored at address 4 ==> 33
+**** Param2 = 3 in immediate mode, simply has value 3
+**** 33 * 3 = 99
+**** Result written according to the third parameter, 4 in position mode
+**** 99 is written to address 4 -- [1002,4,3,4,99]
+
+
+*** NOTES
+**** Parameters that an instruction writes to will never be in immediate mode.
+**** Instruction pointer should increase by the number of values in the instruction after the instruction finishes. 
+***** used to be 4, now variable because of the new instructions
+**** Integers can be negative
+***** [1101,100,-1,4,0] is a valid program (find 100 + -1, store the result in position 4).
+
+**** TEST diagnostic program steps
+***** 1. Request from the user the ID of the system to test
+****** Provide it "1", the ID for the ship's air conditioner unit
+***** 2. Perform a series of diagnostic tests confirming that various parts of the Intcode computer, like parameter modes, function correctly. 
+****** For each test, it will run an output instruction indicating how far the result of the test was from the expected value
+******* 0 means the test was successful
+******* Non-zero outputs mean that a function is not working correctly
+******* check the instructions that were run before the output instruction to see which one failed.
+***** 3. Output a diagnostic code and immediately halt
+****** This final output isn't an error; an output followed immediately by a halt means the program finished
+****** If all outputs were zero except the diagnostic code, the diagnostic program ran successfully
