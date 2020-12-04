@@ -1,3 +1,7 @@
+# For a similar but more elegant solution:
+# https://github.com/fuglede/adventofcode/blob/master/2020/day03/solutions.py
+#
+
 def isTree(x,y):
     y = y * rowLength  # Convert 1-d array to 2-d
     x = x % rowLength # Allow row to extend & repeat
