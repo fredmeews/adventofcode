@@ -1,8 +1,11 @@
 import re
 
 rules = {}
+regexes = {}
 QQ = "\""
 OR = "|"
+
+SAW = { 42 : False, 31 : False }
 
 def quote(s):
     return QQ + s + QQ
@@ -10,35 +13,42 @@ def quote(s):
 def addRule(id, regex):
     rules[id] = regex
 
-def getRule(id):
-    regex = "("
+def getRegex(id):
+    if not id in regexes:
+        regex = "("
+        for s in rules[id].split():
+            if s.isalpha():
+                regex += s
+                return regex.strip("(")
+            elif s == OR:
+                regex +=  OR
+            elif s.isnumeric():
+                subId = int(s)
+                regex += getRegex( subId )            
+        regex += ")"
+        regexes[id] = regex
 
-    print("ID = {}, {}".format(id, rules[id]))
-
-    for s in rules[id].split():
-        if s.isalpha():
-            regex += s
-            return regex.strip("(")
-        elif s == OR:
-            regex +=  OR 
-        elif s.isnumeric():
-            regex += getRule( int(s) )
-
-#    print("RE = {}".format(regex))
-    return regex + ")"
+#        if (id == 8 or id == 11):
+#            print ("{}: {}".format(id, regex))
+            
+    return regexes[id]
         
 
 def match(ruleId, s):
-    regex = getRule(ruleId)
+    regex = getRegex(ruleId)
     pattern = re.compile( regex )
 
-    print ("matching {} against {}".format(s, ruleId))
+    #DEBUG
+    m = pattern.match( s )
+    if (m != None):
+        print ("ID: {} => {}".format(ruleId, m))
+        
     return (pattern.fullmatch( s ) != None)
 
 def readRulesFile(filename):
     with open(filename) as f:
         for line in f:
-            if line.strip():
+            if line.strip() and not line[0] == "#":
                 (key, val) = line.strip().split(": ")
                 addRule(int(key), val.strip(QQ))
 
@@ -51,7 +61,7 @@ def main():
         for line in f:
             if match( 0, line.strip() ):
                 matches += 1
-                print ("MATCHED: {}".format(line.strip()))
+                print ("MATCHED: {}\n----------------\n".format(line.strip()))
 
     print("MATCHES: {}".format(matches))
 

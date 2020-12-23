@@ -1,0 +1,25 @@
+# Original mathes
+X: bbabbbbaabaabba
+Y: ababaaaaaabaaab
+Z: ababaaaaabbbaba
+
+
+# New matches
+X: bbabbbbaabaabba  
+babbbbaabbbbbabbbbbbaabaaabaaa
+aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+bbbbbbbaaaabbbbaaabbabaaa
+bbbababbbbaaaaaaaabbababaaababaabab
+Y: ababaaaaaabaaab
+Z: ababaaaaabbbaba
+baabbaaaabbaaaababbaababb
+abbbbabbbbaaaababbbbbbaaaababb
+aaaaabbaabaaaaababaa
+aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
+
+# NO matches
+abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+aaaabbaaaabbaaa
+babaaabbbaaabaababbaabababaaab
+

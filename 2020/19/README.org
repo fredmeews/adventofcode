@@ -6,102 +6,115 @@ python3 -m unittest test.TestRows
 ** One test
 python3 -m unittest test.TestRows.test_example1Row
 
-* MATCH RULES
-** numbered and build upon each other. For example:
-0: 1 2
-1: "a"
-2: 1 3 | 3 1
-3: "b"
 
-** Some rules, like 3: "b", simply match a single character (in this case, b).
+* PART 1
+** MATCH RULES
+*** numbered and build upon each other. For example:
+    0: 1 2
+    1: "a"
+    2: 1 3 | 3 1
+    3: "b"
 
-**  The remaining rules list the sub-rules that must be followed;
-*** e.g. the rule 0: 1 2 means that to match rule 0, the text being  checked must match rule 1, and 
-*** the text after the part that matched rule 1 must then match rule 2.
+*** Some rules, like 3: "b", simply match a single character (in this case, b).
 
-       Some of the rules have multiple lists of sub-rules separated by a pipe
-       (|). This means that at least one list of sub-rules must match. (The
-       ones that match might be different each time the rule is encountered.)
+***  The remaining rules list the sub-rules that must be followed;
+**** e.g. the rule 0: 1 2 means that to match rule 0, the text being  checked must match rule 1, and 
+**** the text after the part that matched rule 1 must then match rule 2.
 
-       For example, the rule 2: 1 3 | 3 1 means that to match rule 2, the
-       text being checked must match rule 1 followed by rule 3 or it must
-       match rule 3 followed by rule 1.
+     Some of the rules have multiple lists of sub-rules separated by a pipe
+     (|). This means that at least one list of sub-rules must match. (The
+     ones that match might be different each time the rule is encountered.)
 
-       Fortunately, there are no loops in the rules, so the list of possible
-       matches will be finite.
+     For example, the rule 2: 1 3 | 3 1 means that to match rule 2, the
+     text being checked must match rule 1 followed by rule 3 or it must
+     match rule 3 followed by rule 1.
 
-       Since rule 1 matches a and rule 3 matches b, rule 2 matches either ab
-       or ba. Therefore, rule 0 matches aab or aba.
+     Fortunately, there are no loops in the rules, so the list of possible
+     matches will be finite.
 
-** Here's a more interesting example:
-0: 4 1 5
-1: 2 3 | 3 2
-2: 4 4 | 5 5
-3: 4 5 | 5 4
-4: "a"
-5: "b"
+     Since rule 1 matches a and rule 3 matches b, rule 2 matches either ab
+     or ba. Therefore, rule 0 matches aab or aba.
 
-***  Because rule 4 matches a and rule 5 matches b...
-**** Rule 2 matches two letters that are the same (aa or bb),
-**** Rule 3 matches two letters that are different (ab or ba).
+*** Here's a more interesting example:
+    0: 4 1 5
+    1: 2 3 | 3 2
+    2: 4 4 | 5 5
+    3: 4 5 | 5 4
+    4: "a"
+    5: "b"
 
-**** Since rule 1 matches rules 2 and 3... once each in either order, it must...
-***** Match two pairs of letters
-****** one pair with matching letters
-****** one pair with different letters
+****  Because rule 4 matches a and rule 5 matches b...
+***** Rule 2 matches two letters that are the same (aa or bb),
+***** Rule 3 matches two letters that are different (ab or ba).
 
-***** This leaves eight possibilities...
-****** aaab
-****** aaba
-****** bbab
-****** bbba
-****** abaa
-****** abbb
-****** baaa
-****** babb
+***** Since rule 1 matches rules 2 and 3... once each in either order, it must...
+****** Match two pairs of letters
+******* one pair with matching letters
+******* one pair with different letters
 
-**** Rule 0, therefore....
-***** matches a (rule 4)
-***** then any of the eight options from rule 1
-***** then b (rule 5)
-****** aaaabb
-****** aaabab
-****** abbabb
-****** abbbab
-****** aabaab
-****** aabbbb
-****** abaaab
-****** ababbb
+****** This leaves eight possibilities...
+******* aaab
+******* aaba
+******* bbab
+******* bbba
+******* abaa
+******* abbb
+******* baaa
+******* babb
 
+***** Rule 0, therefore....
+****** matches a (rule 4)
+****** then any of the eight options from rule 1
+****** then b (rule 5)
+******* aaaabb
+******* aaabab
+******* abbabb
+******* abbbab
+******* aabaab
+******* aabbbb
+******* abaaab
+******* ababbb
 
-* MATCH INPUT STRINGS
-** Need to be checked against the rules 
+** MATCH INPUT STRINGS
+*** Need to be checked against the rules 
 
-
-* GOAL: determine the NUMBER of messages that completely match RULE 0. 
-** The WHOLE MESSAGE must match all of rule 0 
-*** there can't be extra unmatched characters in the message
-**** For example, aaaabbb might appear to match rule 0 above...
-***** but it has an extra unmatched b on the end
-
-
-** In the above example...  the answer is "2"...
-*** MATCH: ababbb and abbbab
-*** NO MATCH: bababa, aaabbb, and aaaabbb 
+** GOAL: determine the NUMBER of messages that completely match RULE 0. 
+*** The WHOLE MESSAGE must match all of rule 0 
+**** there can't be extra unmatched characters in the message
+***** For example, aaaabbb might appear to match rule 0 above...
+****** but it has an extra unmatched b on the end
 
 
+*** In the above example...  the answer is "2"...
+**** MATCH: ababbb and abbbab
+**** NO MATCH: bababa, aaabbb, and aaaabbb 
 
 
-* Unit Test Input
-0: 4 1 5
-1: 2 3 | 3 2
-2: 4 4 | 5 5
-3: 4 5 | 5 4
-4: "a"
-5: "b"
 
-ababbb
-bababa
-abbbab
-aaabbb
+** Unit Test Input
+ 0: 4 1 5
+ 1: 2 3 | 3 2
+ 2: 4 4 | 5 5
+ 3: 4 5 | 5 4
+ 4: "a"
+ 5: "b"
 
+ ababbb
+ bababa
+ abbbab
+ aaabbb
+
+
+* PART 2
+** Original rules
+***  31: 14 17 | 1 13
+  (b(b(a(ba)|b(aa))|a(b(ab|(a|b)a)|a(ba|ab)))|a(b((ab|(a|b)a)b|((a|b)a|bb)a)|a((ba)b|(ba|bb)a)))
+
+*** 8: 42
+  (((b(a(bb|ab)|b((a|b)(a|b)))|a(b(bb)|a(bb|a(a|b))))b|(((aa|ab)a|(bb)b)b|(((a|b)a|bb)a)a)a)) ==> 42
+
+*** 11: 42 31
+  (((b(a(bb|ab)|b((a|b)(a|b)))|a(b(bb)|a(bb|a(a|b))))b|(((aa|ab)a|(bb)b)b|(((a|b)a|bb)a)a)a)           ==> 42
+   (b(b(a(ba)|b(aa))|a(b(ab|(a|b)a)|a(ba|ab)))|a(b((ab|(a|b)a)b|((a|b)a|bb)a)|a((ba)b|(ba|bb)a))))  ==> 31
+
+  
