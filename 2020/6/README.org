@@ -1,7 +1,0 @@
-* Unit tests https://docs.python.org/3/library/unittest.html
-** All tests
-python3 -m unittest test
-** One suite
-python3 -m unittest test.TestRows
-** One test
-python3 -m unittest test.TestRows.test_example1Row
