@@ -11,21 +11,21 @@ class TestMatch(unittest.TestCase):
         matcher.addRule(0, "1")        
         matcher.addRule(1, "2")
         matcher.addRule(2, "a")
-        self.assertEqual( matcher.getRule(0), "a")
+        self.assertEqual( matcher.getRule(0), "((a))")
 
     def test_getRule2(self):
         matcher.addRule(0, "1")        
         matcher.addRule(1, "2 3")
         matcher.addRule(2, "a")
         matcher.addRule(3, "b")                
-        self.assertEqual( matcher.getRule(0), "ab" )
+        self.assertEqual( matcher.getRule(0), "((ab))" )
 
     def test_getRule2_1(self):
         matcher.addRule(0, "1")        
         matcher.addRule(1, "3 2")
         matcher.addRule(2, "a")
         matcher.addRule(3, "b")                
-        self.assertEqual( matcher.getRule(0), "ba" )
+        self.assertEqual( matcher.getRule(0), "((ba))" )
 
     def test_getRuleWithOr(self):
         matcher.addRule(0, "1")        
@@ -33,7 +33,7 @@ class TestMatch(unittest.TestCase):
         matcher.addRule(2, "a")
         matcher.addRule(3, "b")
 
-        self.assertEqual( matcher.getRule(0), "ab|ba" )                
+        self.assertEqual( matcher.getRule(0), "((ab|ba))" )                
 
     def test_matchWithOr(self):
         matcher.addRule(0, "1")        
@@ -42,7 +42,17 @@ class TestMatch(unittest.TestCase):
         matcher.addRule(3, "b")
 
         self.assertTrue( matcher.match(0, "ab" ))
-        self.assertTrue( matcher.match(0, "ba" ))                                         
+        self.assertTrue( matcher.match(0, "ba" ))
+
+    def testReadRulesFile(self):
+        matcher.readRulesFile("testinput.txt")
+        self.assertTrue( matcher.match(0, "aaaabb" ))
+        self.assertTrue( matcher.match(0, "abbbab" ))        
+        
+        self.assertFalse(matcher.match(0, "bababa"))
+        self.assertFalse(matcher.match(0, "aaaabbb"))        
+        self.assertFalse(matcher.match(0, "aaabbb"))        
+
 
         
 #    def test_matchReferenceRule(self):

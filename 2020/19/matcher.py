@@ -1,8 +1,5 @@
 import re
 
-#with open('input.txt') as f:
-#passports = [x.strip() for x in f.readlines()]
-
 rules = {}
 QQ = "\""
 OR = "|"
@@ -12,29 +9,49 @@ def quote(s):
 
 def addRule(id, regex):
     rules[id] = regex
-    print(rules)
 
 def getRule(id):
-    regex = ""
+    regex = "("
+
+#    print("ID = {}, {}".format(id, rules))
 
     for s in rules[id].split():
         if s.isalpha():
             regex += s
-            break
-
-        print("S = {}".format(s))
-        if s.isnumeric():
-            regex += getRule( int(s) )
+            return regex.strip("(")
         elif s == OR:
-            regex += OR
+            regex +=  OR 
+        elif s.isnumeric():
+            regex += getRule( int(s) )
 
-    print("RE = {}".format(regex))
-    return regex
+#    print("RE = {}".format(regex))
+    return regex + ")"
         
 
 def match(ruleId, s):
     regex = getRule(ruleId)
     pattern = re.compile( regex )
 
-    print ("matching {} against {}".format(s, regex))
-    return (pattern.match( s ))
+#    print ("matching {} against {}".format(s, regex))
+    return (pattern.fullmatch( s ) != None)
+
+def readRulesFile(filename):
+    with open(filename) as f:
+        for line in f:
+            (key, val) = line.strip().split(": ")
+            addRule(int(key), val.strip(QQ))
+
+
+def main():
+    readRulesFile("inputRules.txt")
+    
+    matches = 0
+    with open("inputMatches.txt") as f:
+        for line in f:
+            if match( 0, line.strip() ):
+                matches += 1
+
+    print("MATCHES: {}".format(matches))
+
+if __name__ == '__main__':
+    main()
