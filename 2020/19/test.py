@@ -1,7 +1,16 @@
+# Unit tests [https://docs.python.org/3/library/unittest.html]
+# ============================================================
+#   python3 -m unittest test
+#   python3 -m unittest test.TestRows
+#   python3 -m unittest test.TestRows.test_example1Row
+
 import unittest
 import matcher
 
 class TestMatch(unittest.TestCase):
+    def setUp(self):
+        matcher.init()
+        
     def test_matchLetterRule(self):
         matcher.addRule(0, "a")
         self.assertTrue( matcher.match(0, "a"))

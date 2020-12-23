@@ -2,13 +2,14 @@ import re
 
 rules = {}
 regexes = {}
+SAW = {}
 QQ = "\""
 OR = "|"
 
-SAW = { 42 : False, 31 : False }
-
-def quote(s):
-    return QQ + s + QQ
+def init():
+    rules.clear()
+    regexes.clear()
+    SAW = { 42 : False, 31 : False }
 
 def addRule(id, regex):
     rules[id] = regex
@@ -54,6 +55,7 @@ def readRulesFile(filename):
 
 
 def main():
+    init()
     readRulesFile("testinputRules.txt")
     
     matches = 0
