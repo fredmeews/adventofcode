@@ -1,3 +1,28 @@
+# 0: 8 11
+# (8, "42 | 42 8").                 WAS: 8: 42
+# (11, "42 31 | 42 11 31").    WAS: 11: 42 31
+
+# Have to run rule 42 AT LEAST twice before hitting "31"
+
+ID: 42 => aaaaa,aaaa,aaa,aa,a,bbaab,bbaa,baa,aa,a,a,aaaaa,aaaa,aaa,aa,a,
+ID: 31 => aabba,abba,bba,bb,abaaa,baaa,aaa,aa,a,aabab,abab,bab,ba
+
+[aaaaa]     [bbaa]   [baaa]     [aababaa
+   8:42        11:42   11:31
+
+
+PART1 STR: bbabbbbaabaabba
+PART2 STR: aaaaabbaabaaaaababaa
+ID: 42, ((b(a(bb|ab)|b((a|b)(a|b)))|a(b(bb)|a(bb|a(a|b))))b|(((aa|ab)a|(bb)b)b|(((a|b)a|bb)a)a)a)
+ID  8:  (((b(a(bb|ab)|b((a|b)(a|b)))|a(b(bb)|a(bb|a(a|b))))b|(((aa|ab)a|(bb)b)b|(((a|b)a|bb)a)a)a))
+
+ID 11: (((b(a(bb|ab)|b((a|b)(a|b)))|a(b(bb)|a(bb|a(a|b))))b|(((aa|ab)a|(bb)b)b|(((a|b)a|bb)a)a)a)(b(b(a(ba)|b(aa))|a(b(ab|(a|b)a)|a(ba|ab)))|a(b((ab|(a|b)a)b|((a|b)a|bb)a)|a((ba)b|(ba|bb)a))))
+ID: 31, (b(b(a(ba)|b(aa))|a(b(ab|(a|b)a)|a(ba|ab)))|a(b((ab|(a|b)a)b|((a|b)a|bb)a)|a((ba)b|(ba|bb)a)))
+
+
+
+
+
 * Unit tests https://docs.python.org/3/library/unittest.html
 ** All tests
 python3 -m unittest test
@@ -118,3 +143,83 @@ python3 -m unittest test.TestRows.test_example1Row
    (b(b(a(ba)|b(aa))|a(b(ab|(a|b)a)|a(ba|ab)))|a(b((ab|(a|b)a)b|((a|b)a|bb)a)|a((ba)b|(ba|bb)a))))  ==> 31
 
   
+
+
+* RULE 31 matches
+   1 aaa
+   1 aaab
+   1 aab
+   1 aaba
+   1 abaaa
+   1 baaa
+   1 baaab
+   1 baaba
+   1 babba
+   2 aabaa
+   2 abbaa
+   2 abbab
+   2 bbab
+   3 babab
+   4 ab
+   5 b
+   5 babaa
+   6 a
+   6 aabab
+   6 abbba
+   6 baba
+   6 bbaba
+   6 bbba
+   7 aba
+   7 abaa
+   9 aabba
+   9 abab
+  10 abba
+  11 bab
+  11 bbbaa
+  13 bbaa
+  15 bb
+  16 bba
+  17 aa
+  20 ba
+  20 baa
+
+* RULE 42 matches
+   1 bbbba
+   2 aabb
+   2 aabbb
+   2 bbbbb
+   3 aaaba
+   3 baab
+   3 baabb
+   3 bbbb
+   4 aaaaa
+   5 baaa
+   5 baaaa
+   5 babb
+   5 babbb
+   5 bbba
+   5 bbbab
+   6 aaaab
+   6 aaabb
+   6 aba
+   6 abab
+   6 ababa
+   6 bbaaa
+   7 abb
+   7 bbaab
+   9 aaab
+   9 aab
+   9 abbb
+   9 abbbb
+  10 aaaa
+  10 ba
+  11 bba
+  12 baa
+  12 bbb
+  13 aaa
+  13 bbaa
+  15 ab
+  20 aa
+  20 b
+  25 bb
+  29 a
