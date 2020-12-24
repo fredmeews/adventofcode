@@ -27,18 +27,12 @@ def getRegex(id):
                 regex +=  OR
             elif s.isnumeric():
                 subId = int(s)
-                if not subId == id: # avoid infinite loop
+                if PART == 2 and subId == id: # recursion
+                    regex += "*"
+                else:
                     regex += getRegex( subId )
-
-        if PART == 1:
-            regex += ")"
-        else:
-            regex += ")"
-            if id == 42:
-                regex += "+"
-            elif id == 31:
-                regex += "+" 
-
+                    
+        regex += ")" 
         regexes[id] = regex
     return regexes[id]
 
@@ -46,6 +40,7 @@ def getRegex(id):
 def match(ruleId, s):
     regex = getRegex(ruleId)
     pattern = re.compile( regex )
+    print ("======\n{} => {}".format(ruleId, regex))
 
     m = pattern.fullmatch( s )
     if (m == None):
