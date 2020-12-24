@@ -2,8 +2,7 @@ import re
 
 rules = {}
 regexes = {}
-SAW = {}
-PARTIAL_MATCH = False
+PART=2
 QQ = "\""
 OR = "|"
 CNT=0
@@ -13,8 +12,6 @@ def init():
     print("init")
     rules.clear()
     regexes.clear()
-    SAW = { 42 : False, 31 : False }
-    PARTIAL_MATCH = False
 
 def addRule(id, rule):
     rules[id] = rule
@@ -33,51 +30,28 @@ def getRegex(id):
                 if not subId == id: # avoid infinite loop
                     regex += getRegex( subId )
 
-        # Part 2 - these special rules get a "+" regex modifier
-        regex += ")+" if id == 42 or id == 31 else ")"
-        #regex += ")"   # PART 1
-        
-        regexes[id] = regex
+        if PART == 1:
+            regex += ")"
+        else:
+            regex += ")"
+            if id == 42:
+                regex += "+"
+            elif id == 31:
+                regex += "+" 
 
-#        if (id == 8 or id == 11):
-#            print ("{}: {}".format(id, regex))
-            
+        regexes[id] = regex
     return regexes[id]
 
-def toBin(s):
-    return s.replace("a", "0").replace("b", "1")
 
 def match(ruleId, s):
     regex = getRegex(ruleId)
     pattern = re.compile( regex )
 
-    #DEBUG
-    m = None
-    
-    if PARTIAL_MATCH == True:
-        #        m = pattern.search( s )
-        m = pattern.findall( s )        
-        print("\n\nID: {}, {}".format(ruleId, regex), end = " => ")
-        for tuple in m:
-            for str in tuple: 
-                if str:
-                    print(str, end=",")
-        print(" IN [{}]".format(s))
-        
-    else:
-        m = pattern.fullmatch( s )
-
-    global CNT
-#    print ("===ID: {}, INPUT: {} ".format(ruleId, CNT))
-#    CNT += 1
+    m = pattern.fullmatch( s )
     if (m == None):
         print("\t==> NO MATCH")
-    # elif (m != None):
-    #     bin = toBin(m[0])
-    #     print ("\t==> {} => {} => {} subst in [{}]".format(int(bin, 2), bin, m[0], s ))
-    #     #        print ("ID: {} => {} subst in [{}]".format(ruleId, m, s))
-        
     return (m != None)
+
 
 def readRulesFile(filename):
     with open(filename) as f:
@@ -86,10 +60,13 @@ def readRulesFile(filename):
                 (key, val) = line.strip().split(": ")
                 addRule(int(key), val.strip(QQ))
 
-
 def main():
     init()
     readRulesFile("inputRules.txt")
+
+    if PART == 2: # modify 2 rules
+        addRule(8, "42 | 42 8")
+        addRule(11, "42 31 | 42 11 31")
     
     matches = 0
     with open("inputMatches.txt") as f:
