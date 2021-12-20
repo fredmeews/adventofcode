@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"strconv"
 	"strings"
-	"os"
 )
 
 var inputFile = flag.String("inputFile", "inputs/day04.input", "Relative file path to use as input.")
@@ -15,10 +14,10 @@ var inputFile = flag.String("inputFile", "inputs/day04.input", "Relative file pa
 type Card struct {
 	cell [5][5]int
 	sumUnmarked int
+	won bool
 
 	rowWin[5] int
 	colWin[5] int
-	diagWin[5] int
 }
 	
 
@@ -54,31 +53,36 @@ func main() {
 	for _, m := range moves {
 		num, _ := strconv.Atoi(m)
 		for idx, _ := range cards {
-			x, y, notFound := find(num, cards[idx])
-			if (notFound == false) {
+			if (cards[idx].won) {
+				continue
+			}
+				
+			x, y, found := findNum(num, cards[idx])
+			if (found) {
 //				fmt.Println("num", num, "cd", idx, "found at: ", x,y)
 				cards[idx].sumUnmarked -= num
 				cards[idx].colWin[x] ++
 				cards[idx].rowWin[y]++
 
 				if (isWinner(cards[idx], x, y)) {
-					fmt.Printf("Part 1: %v * %v = %v\n", cards[idx].sumUnmarked, num, cards[idx].sumUnmarked*num)
-					os.Exit(0)
+					cards[idx].won = true
+					fmt.Printf("Part 1: %v * %v = %v\n", cards[idx].sumUnmarked,
+						num, cards[idx].sumUnmarked*num)
 				}
 			}
 		}
 	}
 }
 
-func find(num int, cd Card) (int, int, bool) {
+func findNum(num int, cd Card) (int, int, bool) {
 	for ir, row := range cd.cell {
 		for ic, v := range row {
 			if (num == v) {
-				return ic, ir, false
+				return ic, ir, true
 			}
 		}
 	}
-	return -1, -1, true
+	return -1, -1, false
 }
 	
 func isWinner(cd Card, x int, y int) bool {
