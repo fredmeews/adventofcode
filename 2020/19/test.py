@@ -69,35 +69,27 @@ class TestPart2WTF(unittest.TestCase):
         matcher.init()
         matcher.readRulesFile("testinputRules.txt")
 
-    #start by looking at which rules ALWAYS match the same set of values and
-    # how those rules (especially rules 42 and 31)
-    # are used by the new versions of rules 8 and 11.
-    #
-    def testDebugPatterns(self):
-        matcher.PARTIAL_MATCH = True
-
-        for rule in [8,11]:
-            matcher.match(rule,"aaaaabbaabaaaaababaa")  # 9. USE THIS ONE
-
 
     def testPartTwo(self):
         # Override rules 8, 11 - children of root match "0"
         # 0: 8 11
-        matcher.addRule(8, "42 | 42 8")
-        matcher.addRule(11, "42 31 | 42 11 31")
+#        matcher.addRule(8, "42 | 42 8")
+ #       matcher.addRule(11, "42 31 | 42 11 31")
 
-        self.assertTrue (matcher.match(0, "bbabbbbaabaabba"))
-        self.assertTrue (matcher.match(0, "babbbbaabbbbbabbbbbbaabaaabaaa"))
-        self.assertTrue (matcher.match(0, "aaabbbbbbaaaabaababaabababbabaaabbababababaaa"))
-        self.assertTrue (matcher.match(0, "bbbbbbbaaaabbbbaaabbabaaa"))
-        self.assertTrue (matcher.match(0, "bbbababbbbaaaaaaaabbababaaababaabab"))
-        self.assertTrue (matcher.match(0, "ababaaaaaabaaab"))
-        self.assertTrue (matcher.match(0, "ababaaaaabbbaba"))
-        self.assertTrue (matcher.match(0, "baabbaaaabbaaaababbaababb"))
-        self.assertTrue (matcher.match(0, "abbbbabbbbaaaababbbbbbaaaababb"))
-        self.assertTrue (matcher.match(0, "aaaaabbaabaaaaababaa"))
-        self.assertTrue (matcher.match(0, "aaaabbaabbaaaaaaabbbabbbaaabbaabaaa"))
-        self.assertTrue (matcher.match(0, "aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"))
+        self.assertTrue (matcher.match0(0, "bbabbbbaabaabba"))
+        self.assertTrue (matcher.match0(0, "babbbbaabbbbbabbbbbbaabaaabaaa"))
+        self.assertTrue (matcher.match0(0, "aaabbbbbbaaaabaababaabababbabaaabbababababaaa"))
+        self.assertTrue (matcher.match0(0, "bbbbbbbaaaabbbbaaabbabaaa"))
+        self.assertTrue (matcher.match0(0, "bbbababbbbaaaaaaaabbababaaababaabab"))
+        self.assertTrue (matcher.match0(0, "ababaaaaaabaaab"))
+        self.assertTrue (matcher.match0(0, "ababaaaaabbbaba"))
+        self.assertTrue (matcher.match0(0, "baabbaaaabbaaaababbaababb"))
+        self.assertTrue (matcher.match0(0, "abbbbabbbbaaaababbbbbbaaaababb"))
+        self.assertTrue (matcher.match0(0, "aaaaabbaabaaaaababaa"))
+        self.assertTrue (matcher.match0(0, "aaaabbaabbaaaaaaabbbabbbaaabbaabaaa"))
+        self.assertTrue (matcher.match0(0, "aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"))
+
+        
     
 if __name__ == '__main__':
     unittest.main()
