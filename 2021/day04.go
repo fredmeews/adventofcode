@@ -48,8 +48,8 @@ func main() {
 	 	}
 	 	cards = append(cards, c)
 	}
-	//	fmt.Println(cards)
 
+	// Mark moves on board, look for winning cards
 	for _, m := range moves {
 		num, _ := strconv.Atoi(m)
 		for idx, _ := range cards {
