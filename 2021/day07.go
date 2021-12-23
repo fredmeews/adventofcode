@@ -39,26 +39,35 @@ func main() {
 	}
 
 	// loop through from min to max to find the least fuel
-	leastFuel := 1000000
+	leastFuel, leastFuel2 := 1000000, 1000000188
 	for pos := min; pos <= max; pos++ {
-		distance, fuel := 0,0
+		distance, distance2, fuel, fuel2 := 0,0,0,0
 		for k,v := range crabs {
 			distance = pos - k
 			if (distance < 0) {
 				distance = -distance // abs
 			}
+			distance2 = part2(distance)
+//			fmt.Println(pos, distance, distance2)
+			
 			fuel += distance * v
+			fuel2 += distance2 * v			
 		}
 		if fuel < leastFuel {
 			leastFuel = fuel
 		}
+		if fuel2 < leastFuel2 {
+			leastFuel2 = fuel2
+		}
 	}
 
-	fmt.Println(leastFuel)
-	
-		
-	
-	// avg removing outliers
-	// https://www.thoughtco.com/what-is-an-outlier-3126227
-//	fmt.Println(crabs, (sum-14-16)/8, len(split))
+	fmt.Println(leastFuel, leastFuel2)
+}
+
+func part2(distance int) int {
+	d2 := 0
+	for i := 1; i <= distance; i++ {
+		d2 += i
+	}
+	return d2
 }
