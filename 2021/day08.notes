@@ -1,0 +1,148 @@
+https://github.com/deckarep/golang-set
+
+
+>>>>>* KEY POINT: You care about the DISPLAY VALUES, not the SEGMENT VALUES
+  - because in the end you can match the (sorted) strings in output to
+  the VALUE
+
+
+acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab |
+cdfeb fcadb cdfeb cdbaf
+
+
+
+# Each entry consists of ten unique signal patterns, a | delimiter, and finally the four digit output value
+
+Because the digits 1, 4, 7, and 8 each use a unique number of
+segments, you should be able to tell which combinations of signals
+correspond to those digits. Counting only digits in the output values
+(the part after | on each line), in the above example, there are 26
+instances of digits that use a unique number of segments (highlighted
+above).
+
+e cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb |
+fdgacbe cefdb cefbgd gcbe
+edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec |
+fcgedb cgb dgebacf gc
+fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef |
+cg cg fdcagb cbg
+fbegcd cbd adcefb dageb afcb bc aefdc ecdab fgdeca fcdbega |
+efabcd cedba gadfec cb
+aecbfdg fbg gf bafeg dbefa fcge gcbea fcaegb dgceab fcbdga |
+gecf egdcabf bgf bfgea
+fgeab ca afcebg bdacfeg cfaedg gcfdb baec bfadeg bafgc acf |
+gebdcfa ecba ca fadegcb
+dbcfg fgd bdegcaf fgec aegbdf ecdfab fbedc dacgb gdcebf gf |
+cefg dcbef fcge gbcadfe
+bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd |
+ed bcgafe cdgba cbgef
+egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg |
+gbdfcae bgc cg cgb
+gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc |
+fgae cfgab fg bagce
+
+1,4,7,8
+
+1,4,7,8
+
+sorted:     ab     2 == 1 - Well known "1"
+1. sorted:  abd    "letter in "7", but not in "1" = top segment" ===> SEGMENT A
+
+sorted:     ab ef   4 == 4  - Well known "4"
+
+  1 ^ 7 === top segment
+
+2. "6 character string that doesn't contain BOTH letters from "1" (making it a "6") -- SEGMENT F, therefore SEGMENT C
+
+3. "6 character string that has just one difference with "6" above, SEGMENT E
+
+4. "5 character that has only one UNKNOWN segment in common with "4" = SEGMENT D
+
+5. "6 character missing SEGMENT D.  Diff with 8 == SEGMENT G
+
+6. Remaining letter = SEGMENT B
+
+
+
+
+
+Programatically:
+foreach letter in FOUR {
+  if (! SEVEN.contains (letter) ) {
+     NewMapping[letter] = OldMapping[ A ]
+  }
+
+2. sorted:  bcdefg - I know this is "6", NOT "9" or "0" because it doesn't contain "a", therefore segmentF = segmentB, the bottom half of "1"
+
+sorted:  abcde g  6 - I know this is "0" because it contains segmentG
+sorted:  abcdef  6 - Therefore I know this is is "9" because it's the only one left
+
+Programatically:
+foreach 6-letter signal {
+  foreach letter in "bcdefg" { 
+    foreach letter in "ab" { // one
+      if (! "bcdefg".contains (letter) ) {
+     NewMapping[letter] = OldMapping[ A ]
+  }
+
+
+
+sorted:  bcdef 5 - I know this is a "5" because it does not contain an "a"
+sorted:  a cdfg 5 - I know this is a ""2" because it does not contain a "b", I also know segmentE = segmentG because 3 does not contain "g"
+sorted:  abcdf 5 - Therefore I know this is a "3" because its the only one left
+
+
+sorted:  abcdefg 7 == 8 - Well known
+
+
+
+
+
+	 
+segm:   bcdef
+segm:   bcdef
+segm:  abcdf
+segm:  abcdf
+
+acedgfb 8
+
+dab     7
+
+eafb    4
+
+ab      1
+
+len 2 = 1
+len 3 = 7
+len 4 = 4
+len 5 = 2, 3, 5
+len 6 = 6, 9, 0
+len 7 = 8
+
+   0:      1:      2:      3:      4:
+ aaaa    ....    aaaa    aaaa    ....
+b    c  .    c  .    c  .    c  b    c
+b    c  .    c  .    c  .    c  b    c
+ ....    ....    dddd    dddd    dddd
+e    f  .    f  e    .  .    f  .    f
+e    f  .    f  e    .  .    f  .    f
+ gggg    ....    gggg    gggg    ....
+
+  5:      6:      7:      8:      9:
+ aaaa    aaaa    aaaa    aaaa    aaaa
+b    .  b    .  .    c  b    c  b    c
+b    .  b    .  .    c  b    c  b    c
+ dddd    dddd    ....    dddd    dddd
+.    f  e    f  .    f  e    f  .    f
+.    f  e    f  .    f  e    f  .    f
+ gggg    gggg    ....    gggg    gggg
+  
+
+
+ dddd
+e    a
+e    a
+ ffff
+g    b
+g    b
+ cccc
