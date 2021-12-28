@@ -9,6 +9,9 @@ import (
 	"github.com/deckarep/golang-set"
 )
 
+// Terms:
+// - "Segment" - one of 7 bars on a 7-segment display https://en.wikipedia.org/wiki/Seven-segment_display
+// - "Signal" - list of letters coming through to light up segments, but each are mis-mapped
 type SignalToSegmentMap map[string]string
 type SegmentToValueMap map[string]int
 type BinaryToDisplayMap map[int]int
@@ -55,6 +58,11 @@ func main() {
 	fmt.Println("part 2:", partTwo)
 }
 
+
+// Alorithm: I used a Set library to (a) identify which number a signal
+// represented and (b) then use difference/intersect to figure out
+// segment mapping by process of elimination
+//
 func Analysis(signal [10]mapset.Set) SignalToSegmentMap {
 	found := mapset.NewSet()
 	segmentMap := make(SignalToSegmentMap) 
@@ -113,18 +121,14 @@ func RenderOutput( segmentMap SignalToSegmentMap, output []string) int {
 
 		num += DisplayMap[ segsBinary ] * place
 		place = place / 10
-		if place < 1 {
-			place = 1
-		}
-//		fmt.Println(">> ",o, segsBinary, DisplayMap[ segsBinary ])
 	}
 	return num
 }
 
 
-func AddFoundSegment(signalLetter mapset.Set, wireLetter string, segmentMap SignalToSegmentMap, found mapset.Set) {
+func AddFoundSegment(signalLetter mapset.Set, segmentLetter string, segmentMap SignalToSegmentMap, found mapset.Set) {
 	s := signalLetter.Pop().(string)
-	segmentMap[s] = wireLetter
+	segmentMap[s] = segmentLetter
 	found.Add(s)
 }
 
