@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	"flag"
+	"io/ioutil"
+	"strings"
+	"os"
 	"github.com/deckarep/golang-set"
 )
 
@@ -15,34 +19,37 @@ var DisplayMap BinaryToDisplayMap
 var one, four, seven, eight mapset.Set // well known displays
 
 func main() {
-	var signal [10]mapset.Set
+	split := strings.Split(ReadFile(), "\n")
+	for _, line := range split {
+		s := strings.Split(line, " | ")
+		patterns := strings.Split(s[0], " ")
+		output := strings.Split(s[1], " ")		
 
-	segs := [10]string {"acedgfb", "cdfbe", "gcdfa", "fbcad", "dab", "cefabd", "cdfgeb", "eafb", "cagedb", "ab"}
-	for i, str := range segs {
-		signal[i] = mapset.NewSet()
-		for _, c := range str {
-			signal[i].Add(string(c))
+		// Process patterns
+		var signal [10]mapset.Set
+		for i, str := range patterns {
+			signal[i] = mapset.NewSet()
+			for _, c := range str {
+				signal[i].Add(string(c))
+			}
+			switch signal[i].Cardinality() {
+			case 2:
+				one = signal[i]
+			case 3:
+				seven = signal[i]
+			case 4:
+				four = signal[i]
+			case 7:
+				eight = signal[i]
+			}
 		}
-		switch signal[i].Cardinality() {
-		case 2:
-			one = signal[i]
-		case 3:
-			seven = signal[i]
-		case 4:
-			four = signal[i]
-		case 7:
-			eight = signal[i]
-		}
+
+		// Analyze patterns
+		wires := Analysis(signal)
+
+		InitDisplayMap()
+		RenderOutput( wires, output )
 	}
-	fmt.Println(one, four, seven, eight)	
-
-
-	
-	wires := Analysis(signal)
-	output := [4]string {"cdfeb", "fcadb", "cdfeb", "cdbaf"}
-
-	InitDisplayMap()
-	RenderOutput( wires, output )
 }
 
 func Analysis(signal [10]mapset.Set) SignalToSegmentMap {
@@ -90,7 +97,7 @@ func Analysis(signal [10]mapset.Set) SignalToSegmentMap {
 	return segmentMap
 }
 
-func RenderOutput( segmentMap SignalToSegmentMap, output [4]string) {
+func RenderOutput( segmentMap SignalToSegmentMap, output []string) {
 	
 	for _, o := range output {
 		segsBinary := 0
@@ -136,6 +143,21 @@ func InitDisplayMap() {
 	DisplayMap[0x70] = 7
 	DisplayMap[0x7F] = 8
 	DisplayMap[0x7B] = 9
+}
 
-	// fmt.Println("segxToDigit", DisplayMap)
+func ReadFile() string {
+	args := os.Args
+	ext := "input"
+	if len(args) > 1 {
+		ext = "sample"
+	}
+	fileName := "inputs/" + args[0][strings.LastIndex(args[0], "/")+1:] + "." + ext
+	var inputFile = flag.String("inputFile", fileName, "Relative file path to use as input.")
+	flag.Parse()
+	bytes, err := ioutil.ReadFile(*inputFile)
+	if err != nil {
+	 	fmt.Println(err)	
+		os.Exit(-1)
+	}
+	return string(bytes)
 }
