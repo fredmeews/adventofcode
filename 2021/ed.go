@@ -2,19 +2,14 @@ package main
 
 import (
 	"fmt"
-//	"io/ioutil"
-//	"strconv"
-//	"strings"
-//	"math"
 	"github.com/deckarep/golang-set"
 )
 
 func main() {
 	var signal [10]mapset.Set
-	//knownSegments := mapset.NewSet()
 	segmentMap := make(map[string]string) // segmentMap[oldLetter] = newLetter
 
-	var one, four, seven, eight, three, six mapset.Set
+	var one, three, four, six, seven, eight mapset.Set
 	segs := [10]string {"acedgfb", "cdfbe", "gcdfa", "fbcad", "dab", "cefabd", "cdfgeb", "eafb", "cagedb", "ab"}
 	for i, str := range segs {
 		signal[i] = mapset.NewSet()
@@ -62,10 +57,6 @@ func main() {
 				set = three.Difference(seven).Difference( mapset.NewSetFromSlice ([]interface{}{segmentMap["g"]}))
 				segmentMap["d"] = set.Pop().(string)
 				found.Add(segmentMap["d"])
-
-				set = eight.Difference(found)
-				segmentMap["f"] = set.Pop().(string)
-				found.Add(segmentMap["f"])
 			}
 		}
 	}
@@ -75,15 +66,19 @@ func main() {
 		if sig.Cardinality() == 6 { // 6, 9 or 0
 			set = one.Difference(sig)
 			if set.Cardinality() == 1 { // FOUND SIX
+				fmt.Println("found six?", sig)
 				six = sig
 				segmentMap["c"] = set.Pop().(string)
 				found.Add(segmentMap["c"])
 
 				set = six.Difference(found).Difference(one)
+				fmt.Println("six.Difference(found).Difference(one)", found, segmentMap, set)
 				segmentMap["e"] = set.Pop().(string)
 				found.Add(segmentMap["e"])
 
-				fmt.Println(eight.Difference(found))
+				set = eight.Difference(found)
+				segmentMap["f"] = set.Pop().(string)
+				found.Add(segmentMap["f"])
 			}
 		}
 	}
