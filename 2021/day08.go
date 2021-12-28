@@ -61,7 +61,7 @@ func InitDisplayMap() {
 	// based on https://en.wikipedia.org/wiki/Seven-segment_display#cite_ref-TI_1974_SR-22_23-1	
 	//   abcdefg
 	// 01111111 = "8"
-	OriginalMapping := make(SegmentToBitmask)
+	OriginalMapping = make(SegmentToBitmask)
 	OriginalMapping["a"] = 64
 	OriginalMapping["b"] = 2	
 	OriginalMapping["c"] = 32
