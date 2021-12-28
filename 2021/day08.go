@@ -1,107 +1,159 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"flag"
 	"io/ioutil"
-//	"strconv"
 	"strings"
 	"os"
-	"sort"
+	"github.com/deckarep/golang-set"
 )
 
-// display[segment bits on] = digit
-type BitsToNumberDisplayed map[int]int
-type SegmentToBitmask map[string]int
+type SignalToSegmentMap map[string]string
+type SegmentToValueMap map[string]int
+type BinaryToDisplayMap map[int]int
 
+var SegmentValue SegmentToValueMap
+var DisplayMap BinaryToDisplayMap
 
-var segsToDigit BitsToNumberDisplayed 
-
-type Wires struct {
-	signals []string
-	output []string
-}
-
+var one, four, seven, eight mapset.Set // well known displays
 
 func main() {
-	InitDisplayMap()
+	partTwo := 0
 	split := strings.Split(ReadFile(), "\n")
-	wires := make([]Wires, len(split))
-
-//	part1Count := 0
-	for ix, line := range split {
+	for _, line := range split {
 		s := strings.Split(line, " | ")
-		
-		wires[ix].signals = strings.Split(s[0], " ")
-		wires[ix].output = strings.Split(s[1], " ")
+		patterns := strings.Split(s[0], " ")
+		output := strings.Split(s[1], " ")		
 
-		for _,s := range wires[ix].signals {
-			fmt.Println("wire: ", SortString(string(s)))
+		// Process patterns
+		var signal [10]mapset.Set
+		for i, str := range patterns {
+			signal[i] = mapset.NewSet()
+			for _, c := range str {
+				signal[i].Add(string(c))
+			}
+			switch signal[i].Cardinality() {
+			case 2:
+				one = signal[i]
+			case 3:
+				seven = signal[i]
+			case 4:
+				four = signal[i]
+			case 7:
+				eight = signal[i]
+			}
 		}
-		for _,s := range wires[ix].output {
-			fmt.Println("segm: ", SortString(string(s)))
-		}		
+
+		// Analyze patterns
+		InitDisplayMap()		
+		wires := Analysis(signal)
+//		fmt.Println("wires:", wires)
+		partTwo += RenderOutput( wires, output )
 	}
 
-	// Figure out new mapping of signal to segment
-	//
-	// - Given 1, 4, 7 - you can figure out "a" segment
-	// 
-
-	PartTwo()
+	fmt.Println("part 2:", partTwo)
 }
 
-func SortString(w string) string {
-    s := strings.Split(w, "")
-    sort.Strings(s)
-    return strings.Join(s, "")
+func Analysis(signal [10]mapset.Set) SignalToSegmentMap {
+	found := mapset.NewSet()
+	segmentMap := make(SignalToSegmentMap) 
+	
+	set := seven.Difference(one)
+	AddFoundSegment( set, "a", segmentMap, found)
+
+	// Five cardinality 
+	for _, sig := range signal {
+		if sig.Cardinality() == 5 { // 2, 3 or 5
+			if (sig.Intersect(one).Equal(one)) { // THREE
+				three := sig
+
+				set = four.Difference(three)
+				AddFoundSegment( set, "b", segmentMap, found)				
+				
+				set = three.Difference(seven).Difference(four)
+
+				AddFoundSegment( set, "g", segmentMap, found)	
+
+				set = three.Difference(seven).Difference(found)
+				AddFoundSegment( set, "d", segmentMap, found)
+			}
+		}
+	}
+
+	// Six cardinality 
+	for _, sig := range signal {
+		if sig.Cardinality() == 6 { // 6, 9 or 0
+			set = one.Difference(sig)
+			if set.Cardinality() == 1 { // FOUND SIX
+				six := sig
+				AddFoundSegment( set, "c", segmentMap, found)
+
+				set = six.Difference(found).Difference(one)
+				AddFoundSegment( set, "e", segmentMap, found)				
+
+				set = eight.Difference(found)
+				AddFoundSegment( set, "f", segmentMap, found)								
+			}
+		}
+	}
+				
+	return segmentMap
+}
+
+func RenderOutput( segmentMap SignalToSegmentMap, output []string) int {
+	place := 1000
+	num := 0
+	for _, o := range output {
+		segsBinary := 0
+		for _, s := range o {
+			letter := string(s)
+			segsBinary |= SegmentValue [ segmentMap[letter] ]
+		}
+
+		num += DisplayMap[ segsBinary ] * place
+		place = place / 10
+		if place < 1 {
+			place = 1
+		}
+//		fmt.Println(">> ",o, segsBinary, DisplayMap[ segsBinary ])
+	}
+	return num
+}
+
+
+func AddFoundSegment(signalLetter mapset.Set, wireLetter string, segmentMap SignalToSegmentMap, found mapset.Set) {
+	s := signalLetter.Pop().(string)
+	segmentMap[s] = wireLetter
+	found.Add(s)
 }
 
 func InitDisplayMap() {
-	// based on https://en.wikipedia.org/wiki/Seven-segment_display#cite_ref-TI_1974_SR-22_23-1	
+	// based on https://en.wikipedia.org/wiki/Seven-segment_display#cite_ref-TI_1974_SR-22_23-1	- remapped from std for this puzzle
 	//   abcdefg
 	// 01111111 = "8"
-	OriginalMapping = make(SegmentToBitmask)
-	OriginalMapping["a"] = 64
-	OriginalMapping["b"] = 2	
-	OriginalMapping["c"] = 32
-	OriginalMapping["d"] = 1
-	OriginalMapping["e"] = 4	
-	OriginalMapping["f"] = 16
-	OriginalMapping["g"] = 8
+	SegmentValue = make(SegmentToValueMap)
+	SegmentValue["a"] = 64
+	SegmentValue["b"] = 2	
+	SegmentValue["c"] = 32
+	SegmentValue["d"] = 1
+	SegmentValue["e"] = 4	
+	SegmentValue["f"] = 16
+	SegmentValue["g"] = 8
 
-	NumberDisplayed = make(BitsToNumberDisplayed)
+	DisplayMap = make(BinaryToDisplayMap)
 	
-	NumberDisplayed[0b01111110] = 0
-	NumberDisplayed[0b00110000] = 1
-	NumberDisplayed[0b01101101] = 2
-	NumberDisplayed[0b01111001] = 3
-	NumberDisplayed[0b00110011] = 4
-	NumberDisplayed[0b01011011] = 5
-	NumberDisplayed[0b01011111] = 6
-	NumberDisplayed[0b01110000] = 7
-	NumberDisplayed[0b01111111] = 8
-	NumberDisplayed[0b01111011] = 9
-
-	fmt.Println("segxToDigit", NumberDisplayed)
+	DisplayMap[0x7E] = 0
+	DisplayMap[0x30] = 1
+	DisplayMap[0x6D] = 2
+	DisplayMap[0x79] = 3
+	DisplayMap[0x33] = 4
+	DisplayMap[0x5B] = 5
+	DisplayMap[0x5F] = 6
+	DisplayMap[0x70] = 7
+	DisplayMap[0x7F] = 8
+	DisplayMap[0x7B] = 9
 }
-
-func PartTwo() {
-	// This puzzle map is different than typical 7-seg display
-	i := Render(mapping, "cf")
-	fmt.Println(i)
-}
-
-func Render(mapping map[string]int, segment string) int {
-	segs := 0
-	for _, c := range segment {
-		s := string(c)
-		segs |= mapping[s]
-	}
-	
-	return segmentsToDisplay[segs]
-}
-
 
 func ReadFile() string {
 	args := os.Args
