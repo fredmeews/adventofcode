@@ -5,11 +5,12 @@ import (
 	"github.com/deckarep/golang-set"
 )
 
+type SegmentToWireMap map[string]string
+var one, four, seven, eight mapset.Set // well known displays
+
 func main() {
 	var signal [10]mapset.Set
-	segmentMap := make(map[string]string) // segmentMap[oldLetter] = newLetter
 
-	var one, three, four, six, seven, eight mapset.Set
 	segs := [10]string {"acedgfb", "cdfbe", "gcdfa", "fbcad", "dab", "cefabd", "cdfgeb", "eafb", "cagedb", "ab"}
 	for i, str := range segs {
 		signal[i] = mapset.NewSet()
@@ -30,9 +31,13 @@ func main() {
 	fmt.Println(one, four, seven, eight)
 
 	
-	//	fmt.Printf("%T", seven.Difference(one).Pop() )
+	fmt.Println(Analysis(signal))
 
+}
+
+func Analysis(signal [10]mapset.Set) SegmentToWireMap {
 	found := mapset.NewSet()
+	segmentMap := make(SegmentToWireMap) 
 	
 	set := seven.Difference(one)
 	segmentMap["a"] = set.Pop().(string)
@@ -43,7 +48,7 @@ func main() {
 		if sig.Cardinality() == 5 { // 2, 3 or 5
 			if (sig.Intersect(one).Equal(one)) { // THREE
 				fmt.Println("FOUND THREE:" , sig)
-				three = sig
+				three := sig
 
 				set = four.Difference(three)
 				segmentMap["b"] = set.Pop().(string)
@@ -67,7 +72,7 @@ func main() {
 			set = one.Difference(sig)
 			if set.Cardinality() == 1 { // FOUND SIX
 				fmt.Println("found six?", sig)
-				six = sig
+				six := sig
 				segmentMap["c"] = set.Pop().(string)
 				found.Add(segmentMap["c"])
 
@@ -83,5 +88,5 @@ func main() {
 		}
 	}
 				
-	fmt.Println(segmentMap)
+	return segmentMap
 }
